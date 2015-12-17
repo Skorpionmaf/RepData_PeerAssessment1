@@ -4,19 +4,42 @@ output:
   html_document:
     keep_md: true
 ---
-
-
 ## Loading and preprocessing the data
-
-
+```{r}
+df = read.csv("./activity.csv", stringsAsFactors = FALSE)
+#df$date = strptime(df$date, format = "%Y-%m-%d")
+```
 
 ## What is mean total number of steps taken per day?
+###Histogram of total numbers of steps per day
+```{r}
+new_df = df[which( !is.na(df$steps) ), ]
+# sum over steps in the same day:
+histo = aggregate(new_df$steps, by = list(new_df$date), FUN = sum) 
+# rename column just to be more clear:
+names(histo) = c('Date', 'tot_steps')
+# plot the histogram:
+hist(histo$tot_steps, col = 'red', xlab = 'Total number of steps per day', main = 'Histogram')
+```
 
-
+###Mean and median of the total number of steps per day:
+```{r}
+mean(histo$tot_steps)
+median(histo$tot_steps)
+```
 
 ## What is the average daily activity pattern?
+###Time series plot:
+```{r}
+data = aggregate(new_df$steps, by = list(new_df$interval), FUN = mean)
+names(data) = c('interval', 'tot_steps')
+plot(data$interval, data$tot_steps, type = 'l', xlab = 'interval', ylab = 'tot_steps', main = 'Average over all days of total number of steps vs interval')
+```
 
-
+###Interval with the maximun number of steps:
+```{r}
+data[ which( data$tot_steps == max(data$tot_steps) ), 'interval']
+```
 
 ## Imputing missing values
 
